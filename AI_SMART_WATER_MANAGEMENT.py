@@ -54,49 +54,6 @@ def train_flood_risk_model():
     plt.show()
 if __name__ == '__main__':
     train_flood_risk_model()
-Frontend Code:
-<form onsubmit="event.preventDefault(); predictFloodRisk();">
-    <label for="waterLevel">Water Level (cm):</label>
-    <input type="number" id="waterLevel" name="waterLevel" step="0.1" required>
-    <label for="rainfall">Rainfall (mm):</label>
-    <input type="number" id="rainfall" name="rainfall" step="0.1" required>
-    <label for="location">Location:</label>
-    <input type="text" id="location" name="location" required>
-    <button type="submit">Predict</button>
-</form>
-Backend (Flask) Code:
-@app.route('/predictFloodRisk', methods=['POST'])
-def predict_flood_risk():
-    data = request.get_json()
-    water_level = data.get('water_level')
-    rainfall = data.get('rainfall')
-    location = data.get('location', 'Unknown')
-    flood_risk = model.predict([[float(water_level), float(rainfall)]])[0]
-    risk_label = "High" if flood_risk else "Low"
-    # Store the prediction in the database
-    cur = mysql.connection.cursor()
-    cur.execute(
-        "INSERT INTO water_data (water_level, rainfall, location, risk_level) VALUES (%s, %s, %s, %s)",
-        (water_level, rainfall, location, risk_label)
-    )
-    mysql.connection.commit()
-    cur.close()
-    return jsonify({
-        "water_level": water_level,
-        "rainfall": rainfall,
-        "location": location,
-        "flood_risk": risk_label
-    })
-Database Schema:
-CREATE TABLE water_data (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    water_level FLOAT NOT NULL,
-    rainfall FLOAT NOT NULL,
-    location VARCHAR(255) NOT NULL,
-    risk_level VARCHAR(50), -- High/Low risk from model
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
 
 
 
